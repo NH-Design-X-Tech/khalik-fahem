@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#050705">
+  <meta name="description" content="???? ??? ?????? ??? ???? ????? ????? ?? ??????.">
+  <title>??????? | ??? ????</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--lime:#b2cc3a;--ink:#001c15;--paper:#fafbf7;--muted:#60645c;--line:#e5e8dd;--font:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif}*{box-sizing:border-box}body{min-height:100vh;margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}.wrap{width:min(920px,calc(100% - 32px));margin:auto}.nav{height:68px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font-weight:700}.mark{display:block;width:auto;height:42px;object-fit:contain}.back{color:#4d574f;font-size:12px;text-decoration:none}.back:hover{color:var(--ink)}main{padding:44px 0 64px}.intro{text-align:center;margin:0 auto 24px}.kicker{color:var(--ink);font-size:12px;font-weight:700}.intro h1{margin:8px 0;font-size:clamp(30px,5vw,48px);line-height:1.3}.intro p{margin:0;color:var(--muted);font-size:14px;line-height:1.8}.form-card{min-height:480px;overflow:hidden;border-radius:14px;background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 12px 30px #001c1510}.form-placeholder{min-height:480px;display:grid;place-items:center;padding:28px;text-align:center;background:var(--paper)}.form-placeholder-inner{max-width:440px}.form-icon{width:58px;height:58px;display:grid;place-items:center;margin:0 auto 14px;border-radius:50%;background:#edf2d4;color:var(--ink);font-size:24px}.form-placeholder h2{margin:0 0 8px;font-size:21px}.form-placeholder p{margin:0;color:var(--muted);font-size:13px;line-height:1.9}.steps{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:22px;color:#62665c;font-size:11px}.steps span{display:flex;align-items:center;gap:6px}.steps b{width:23px;height:23px;display:grid;place-items:center;border:1px solid #c9d19d;border-radius:50%;font-size:10px}.steps .active{color:var(--ink)}.steps .active b{background:var(--lime);color:var(--ink);border-color:var(--lime)}footer{padding:0 0 20px;text-align:center;color:#70746a;font-size:10px}.form-frame{display:block;width:100%;height:min(78vh,780px);min-height:620px;border:0;background:#fff}.nav{background:#fff;border-bottom:1px solid var(--line)}
+    @media(max-width:560px){.nav{height:58px}.back{font-size:10px}main{padding:32px 0 42px}.intro{margin-bottom:19px}.intro p{font-size:12px}.form-card,.form-placeholder{min-height:440px}.form-placeholder{padding:21px 16px}.form-placeholder h2{font-size:18px}.form-placeholder p{font-size:12px}.steps{gap:7px;font-size:9px}.steps span{gap:4px}.form-frame{height:78vh;min-height:560px}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="wrap nav"><a class="brand" href="index.html" aria-label="??? ????"><img class="mark" src="../assets/khalik-fahem-mark.svg" alt="??? ????"></a><a class="back" href="index.html">? ?????? ???????</a></div></header>
+  <main class="wrap">
+    <div class="intro"><span class="kicker">?????? ???????</span><h1>???? ???????</h1><p>??? ?? ???????? ?? ???? ????? ?? ????? ???????.</p></div>
+    <section class="form-card" aria-label="????? ???????">
+      <div class="form-placeholder" id="form-placeholder"><div class="form-placeholder-inner"><div class="form-icon" aria-hidden="true">?</div><h2>????? ??????? ????? ???</h2><p>??? ???? Typeform ?? ??????? ??????. ?? ????? Calendly ???? ??? ???? ?? Typeform ??? ????? ??????? ????? ??? ????? ???????.</p></div></div>
+      <iframe id="typeform" class="form-frame" title="????? ??????? ?? ??? ????" allow="camera; microphone; autoplay; encrypted-media; fullscreen; payment" hidden></iframe>
+    </section>
+    <div class="steps" aria-label="????? ???????"><span><b>?</b> ???? ???????</span><span class="active"><b>?</b> ???? ????? ?????</span><span><b>?</b> ???? ????? ?????</span></div>
+  </main>
+  <footer>??? ???? ? ???? ????????</footer>
+  <script>
+    // Add the published Typeform embed URL here. Configure Calendly as its final step
+    // and set Typeform's completion redirect to confirmation.html.
+    const TYPEFORM_URL = '';
+    if (TYPEFORM_URL) { const frame=document.getElementById('typeform'); frame.src=TYPEFORM_URL; frame.hidden=false; document.getElementById('form-placeholder').hidden=true; }
+  </script>
+</body>
+</html>
