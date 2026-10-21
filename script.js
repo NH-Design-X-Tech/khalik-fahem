@@ -6,54 +6,6 @@ if (year) {
   year.textContent = new Date().getFullYear();
 }
 
-const videoContainer = document.querySelector('.video-player');
-const videoPlayButton = document.querySelector('.video-play-button');
-
-const getYouTubeVideoId = (value) => {
-  try {
-    const url = new URL(value);
-    const host = url.hostname.replace(/^www\./, '').toLowerCase();
-    let videoId = '';
-
-    if (host === 'youtu.be') {
-      videoId = url.pathname.split('/').filter(Boolean)[0] || '';
-    } else if (['youtube.com', 'm.youtube.com', 'youtube-nocookie.com'].includes(host)) {
-      videoId = url.pathname === '/watch'
-        ? url.searchParams.get('v') || ''
-        : url.pathname.match(/^\/(?:embed|shorts)\/([^/?]+)/)?.[1] || '';
-    }
-
-    return /^[a-zA-Z0-9_-]{11}$/.test(videoId) ? videoId : null;
-  } catch {
-    return null;
-  }
-};
-
-if (videoContainer && videoPlayButton) {
-  const startVideo = () => {
-    const videoId = getYouTubeVideoId(videoContainer.dataset.youtubeUrl || '');
-
-    if (!videoId) {
-      videoPlayButton.setAttribute('aria-label', 'أضف رابط فيديو يوتيوب صالحًا');
-      return;
-    }
-
-    const player = document.createElement('iframe');
-    player.className = 'video-embed';
-    player.title = 'فيديو خلك فاهم';
-    player.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&mute=1&controls=1&fs=1&rel=0&playsinline=1';
-    player.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    player.allowFullscreen = true;
-    player.referrerPolicy = 'strict-origin-when-cross-origin';
-    player.loading = 'eager';
-    videoContainer.replaceWith(player);
-    videoPlayButton.hidden = true;
-  };
-
-  videoPlayButton.addEventListener('click', startVideo, { once: true });
-  startVideo();
-}
-
 const testimonialCarousel = document.querySelector('.testimonial-carousel');
 
 if (testimonialCarousel) {
