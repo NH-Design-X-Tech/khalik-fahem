@@ -30,7 +30,7 @@ const getYouTubeVideoId = (value) => {
 };
 
 if (videoContainer && videoPlayButton) {
-  videoPlayButton.addEventListener('click', () => {
+  const startVideo = () => {
     const videoId = getYouTubeVideoId(videoContainer.dataset.youtubeUrl || '');
 
     if (!videoId) {
@@ -41,14 +41,17 @@ if (videoContainer && videoPlayButton) {
     const player = document.createElement('iframe');
     player.className = 'video-embed';
     player.title = 'فيديو خلك فاهم';
-    player.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&controls=1&fs=1&rel=0&playsinline=1';
+    player.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&mute=1&controls=1&fs=1&rel=0&playsinline=1';
     player.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     player.allowFullscreen = true;
     player.referrerPolicy = 'strict-origin-when-cross-origin';
     player.loading = 'eager';
     videoContainer.replaceWith(player);
     videoPlayButton.hidden = true;
-  });
+  };
+
+  videoPlayButton.addEventListener('click', startVideo, { once: true });
+  startVideo();
 }
 
 const testimonialCarousel = document.querySelector('.testimonial-carousel');
