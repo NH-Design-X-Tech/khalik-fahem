@@ -38,8 +38,8 @@
 .hero .video-shell{grid-area:video;align-self:center;width:100%;max-width:none;margin:0;padding:8px;border-radius:18px;transform:rotate(-1deg);box-shadow:0 18px 42px #001c151a}
 .hero .video{border-radius:12px}
 .hero .under-video{padding:14px 8px 6px;flex-wrap:wrap}
-.hero-inner>.cta{grid-area:action;justify-self:end;margin-top:0;min-height:49px;padding:0 22px;background:var(--white);color:var(--black);border-color:var(--white);font-size:14px}
-.hero-inner>.cta:hover{background:var(--black);color:var(--lime);border-color:var(--black)}
+.hero-inner>.cta{grid-area:action;justify-self:end;margin-top:0;min-height:49px;padding:0 22px;background:var(--black);color:var(--lime);border-color:var(--black);font-size:14px}
+.hero-inner>.cta:hover{background:var(--white);color:var(--black);border-color:var(--white)}
 .hero-inner>.cta:focus-visible{outline-color:var(--black)}
 @media(max-width:1000px) and (min-width:801px){
   .hero-inner{column-gap:36px}
