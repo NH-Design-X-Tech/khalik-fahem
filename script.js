@@ -22,20 +22,32 @@ if (testimonialCarousel) {
     const mobileLayout = window.matchMedia('(max-width: 700px)');
     let index = 0;
     let pointerStartX = null;
+    let wrapping = false;
+    let wrapTimer = null;
+
+    // Continue forward into a duplicate first cards, then reset invisibly.
+    cards.slice(0, 3).forEach((card) => {
+      const clone = card.cloneNode(true);
+      clone.inert = true;
+      clone.setAttribute('aria-hidden', 'true');
+      clone.removeAttribute('id');
+      clone.querySelectorAll('[id]').forEach((element) => element.removeAttribute('id'));
+      track.appendChild(clone);
+    });
 
     testimonialCarousel.tabIndex = 0;
 
-    const updateCarousel = () => {
+    const updateCarousel = (visualIndex = null) => {
       const visibleCount = mobileLayout.matches ? 1 : 3;
-      const maxIndex = Math.max(0, cards.length - visibleCount);
+      const maxIndex = cards.length > visibleCount ? cards.length - 1 : 0;
       index = Math.max(0, Math.min(index, maxIndex));
 
       const gap = Number.parseFloat(getComputedStyle(track).columnGap) || 0;
       const cardWidth = cards[0].getBoundingClientRect().width;
-      track.style.transform = `translateX(${index * (cardWidth + gap)}px)`;
+      track.style.transform = `translateX(${(visualIndex ?? index) * (cardWidth + gap)}px)`;
 
       cards.forEach((card, cardIndex) => {
-        const isVisible = cardIndex >= index && cardIndex < index + visibleCount;
+        const isVisible = (cardIndex - index + cards.length) % cards.length < visibleCount;
         card.inert = !isVisible;
         card.setAttribute('aria-hidden', String(!isVisible));
       });
@@ -43,8 +55,8 @@ if (testimonialCarousel) {
       previousButton.disabled = index === 0;
       nextButton.disabled = maxIndex === 0;
 
-      const first = cards.length ? index + 1 : 0;
-      const last = Math.min(index + visibleCount, cards.length);
+      const visiblePositions = Array.from({ length: Math.min(visibleCount, cards.length) },
+        (_, offset) => ((index + offset) % cards.length + 1).toLocaleString('ar'));
       // One indicator for each reachable carousel position, in RTL order.
       if (dots.children.length !== maxIndex + 1) {
         dots.replaceChildren();
@@ -58,19 +70,50 @@ if (testimonialCarousel) {
         dot.classList.toggle('is-active', position === index);
       });
 
-      status.textContent = `${first.toLocaleString('ar')}–${last.toLocaleString('ar')} من ${cards.length.toLocaleString('ar')}`;
+      status.textContent = `${visiblePositions.join('، ')} من ${cards.length.toLocaleString('ar')}`;
     };
 
+    const finishWrap = () => {
+      if (!wrapping) return;
+      wrapping = false;
+      clearTimeout(wrapTimer);
+      track.style.transition = 'none';
+      updateCarousel();
+      track.getBoundingClientRect(); // Commit the invisible reset before restoring animation.
+      track.style.transition = '';
+    };
+
+    const wrapForward = () => {
+      wrapping = true;
+      index = 0;
+      updateCarousel(cards.length);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        finishWrap();
+      } else {
+        wrapTimer = setTimeout(finishWrap, 500);
+      }
+    };
+
+    track.addEventListener('transitionend', (event) => {
+      if (event.target === track && event.propertyName === 'transform') finishWrap();
+    });
+
     previousButton.addEventListener('click', () => {
+      if (wrapping) return;
       index -= 1;
       updateCarousel();
     });
 
     nextButton.addEventListener('click', () => {
+      if (wrapping) return;
       const visibleCount = mobileLayout.matches ? 1 : 3;
-      const maxIndex = Math.max(0, cards.length - visibleCount);
-      index = index === maxIndex ? 0 : index + 1;
-      updateCarousel();
+      const maxIndex = cards.length > visibleCount ? cards.length - 1 : 0;
+      if (maxIndex > 0 && index === maxIndex) {
+        wrapForward();
+      } else {
+        index += 1;
+        updateCarousel();
+      }
     });
 
     testimonialCarousel.addEventListener('keydown', (event) => {
@@ -87,7 +130,7 @@ if (testimonialCarousel) {
     let dragStep = 0;
 
     viewport.addEventListener('pointerdown', (event) => {
-      if (!event.isPrimary || event.target.closest('button') || (event.pointerType === 'mouse' && event.button !== 0)) {
+      if (wrapping || !event.isPrimary || event.target.closest('button') || (event.pointerType === 'mouse' && event.button !== 0)) {
         return;
       }
 
@@ -112,8 +155,8 @@ if (testimonialCarousel) {
       }
 
       const visibleCount = mobileLayout.matches ? 1 : 3;
-      const maxIndex = Math.max(0, cards.length - visibleCount);
-      const maxTranslate = maxIndex * dragStep;
+      const maxIndex = cards.length > visibleCount ? cards.length - 1 : 0;
+      const maxTranslate = (index === maxIndex && maxIndex > 0 ? cards.length : maxIndex) * dragStep;
       const translate = Math.max(0, Math.min(maxTranslate, dragStartTranslate + (event.clientX - pointerStartX)));
       track.style.transform = `translateX(${translate}px)`;
     });
@@ -125,33 +168,38 @@ if (testimonialCarousel) {
 
       const translate = dragStartTranslate + (event ? event.clientX - pointerStartX : 0);
       const visibleCount = mobileLayout.matches ? 1 : 3;
-      const maxIndex = Math.max(0, cards.length - visibleCount);
+      const maxIndex = cards.length > visibleCount ? cards.length - 1 : 0;
       const requestedIndex = Math.round(translate / dragStep);
-      index = index === maxIndex && requestedIndex > maxIndex
-        ? 0
-        : Math.max(0, Math.min(maxIndex, requestedIndex));
+      const shouldWrap = maxIndex > 0 && index === maxIndex && requestedIndex > maxIndex;
+      if (!shouldWrap) index = Math.max(0, Math.min(maxIndex, requestedIndex));
       pointerStartX = null;
       viewport.classList.remove('is-dragging');
       track.style.transition = '';
       if (event && viewport.hasPointerCapture && viewport.hasPointerCapture(event.pointerId)) {
         viewport.releasePointerCapture(event.pointerId);
       }
-      updateCarousel();
+      if (shouldWrap) wrapForward();
+      else updateCarousel();
     };
 
     viewport.addEventListener('pointerup', finishDrag);
-    viewport.addEventListener('pointercancel', finishDrag);
+    viewport.addEventListener('pointercancel', () => finishDrag(null));
+
+    const resizeCarousel = () => {
+      finishWrap();
+      updateCarousel();
+    };
 
     if (mobileLayout.addEventListener) {
-      mobileLayout.addEventListener('change', updateCarousel);
+      mobileLayout.addEventListener('change', resizeCarousel);
     } else {
-      mobileLayout.addListener(updateCarousel);
+      mobileLayout.addListener(resizeCarousel);
     }
 
     if ('ResizeObserver' in window) {
-      new ResizeObserver(updateCarousel).observe(viewport);
+      new ResizeObserver(resizeCarousel).observe(viewport);
     } else {
-      window.addEventListener('resize', updateCarousel, { passive: true });
+      window.addEventListener('resize', resizeCarousel, { passive: true });
     }
 
     updateCarousel();
